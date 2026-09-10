@@ -36,5 +36,5 @@ releaseNotes: >-
   state under the app data directory so Umbrel's own Backups cover it.
 dependencies: []
 path: "/admin"
-defaultUsername: ""
-defaultPassword: ""
+defaultUsername: "admin@diasporaconcierge.app"
+deterministicPassword: true

@@ -21,12 +21,18 @@ services:
       NODE_ENV: production
       PORT: "4000"
       DATABASE_URL: "postgresql://diaspora:${APP_SEED}@diaspora-concierge_postgres_1:5432/diaspora_concierge"
-      # Umbrel derives APP_SEED deterministically per app — a long hex string, stable
+      # Umbrel derives APP_SEED / APP_PASSWORD deterministically per app — long, stable
       # across restarts and reinstalls, never in source control.
       JWT_SECRET: ${APP_SEED}
+      # The admin account is bootstrapped on first start with NO config edit needed:
+      # username below, password = the app password Umbrel shows on this app's page
+      # (deterministicPassword). Change it afterwards from the admin panel.
+      ADMIN_EMAIL: admin@diasporaconcierge.app
+      ADMIN_BOOTSTRAP_PASSWORD: ${APP_PASSWORD}
     env_file:
-      # Ships with the app (safe empty defaults) and is copied to the app data dir on
-      # install; edit it there for the Cloudflare token and payment-provider secrets.
+      # Ships with the app (all blank) and is copied to the app data dir on install. Only
+      # needed for the Cloudflare tunnel token and payment-provider secrets — the app runs
+      # and the admin panel works on your LAN without touching it.
       - ${APP_DATA_DIR}/backend.env
     volumes:
       - ${APP_DATA_DIR}/uploads:/app/uploads
