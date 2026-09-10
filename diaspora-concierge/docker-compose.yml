@@ -10,7 +10,7 @@ services:
       PROXY_AUTH_ADD: "false"
 
   backend:
-    image: ghcr.io/nomadicco0-star/diaspora-concierge-backend:1.0.0
+    image: ghcr.io/nomadicco0-star/diaspora-concierge-backend:1.0.2
     restart: unless-stopped
     stop_grace_period: 1m
     user: "1000:1000"
@@ -30,9 +30,10 @@ services:
       ADMIN_EMAIL: admin@diasporaconcierge.app
       ADMIN_BOOTSTRAP_PASSWORD: ${APP_PASSWORD}
     env_file:
-      # Ships with the app (all blank) and is copied to the app data dir on install. Only
-      # needed for the Cloudflare tunnel token and payment-provider secrets — the app runs
-      # and the admin panel works on your LAN without touching it.
+      # Ships with the app (all blank) and is copied to the app data dir on install. Only needed
+      # to connect payment providers — the app runs and the admin panel works on your LAN without
+      # touching it. Public internet access is handled by the separate "Cloudflare Tunnel"
+      # Umbrel app pointed at diaspora-concierge_backend_1:4000.
       - ${APP_DATA_DIR}/backend.env
     volumes:
       - ${APP_DATA_DIR}/uploads:/app/uploads
@@ -91,18 +92,3 @@ services:
           fi
           sleep 86400
         done
-
-  cloudflared:
-    image: cloudflare/cloudflared:2026.9.0
-    restart: unless-stopped
-    # If the token isn't set yet, idle instead of crash-looping — the rest of the app
-    # (including the admin panel over your LAN) still works. Cloudflare Tunnel itself
-    # is disruption-tolerant: it holds four outbound connections to Cloudflare's edge,
-    # reconnects on its own after an internet drop or a home-IP change, and needs no
-    # port-forwarding.
-    command:
-      - sh
-      - -c
-      - 'if [ -z "$$TUNNEL_TOKEN" ]; then echo "TUNNEL_TOKEN not set - edit backend.env in this app''s data folder and restart the app"; exec sleep infinity; fi; exec cloudflared tunnel --no-autoupdate --loglevel info run'
-    env_file:
-      - ${APP_DATA_DIR}/backend.env
