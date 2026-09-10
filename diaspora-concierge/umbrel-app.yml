@@ -4,7 +4,7 @@ name: Diaspora Concierge
 tagline: Orchestration backend + admin panel for the Diaspora Concierge apps
 icon: https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
 category: Finance
-version: "1.0.0"
+version: "1.0.1"
 port: 4000
 description: >-
   The self-hosted backend for the Diaspora Concierge client and runner apps:
@@ -32,7 +32,7 @@ support: https://github.com/nomadicco0-star/diaspora-concierge-app/issues
 gallery:
   - https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
 releaseNotes: >-
-  First release. Backend + bundled Postgres + Cloudflare Tunnel, all durable
+  1.0.1 — admin bootstraps automatically, no config needed to start. Backend + bundled Postgres + Cloudflare Tunnel, all durable
   state under the app data directory so Umbrel's own Backups cover it.
 dependencies: []
 path: "/admin"
