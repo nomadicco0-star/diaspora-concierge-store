@@ -13,7 +13,11 @@ services:
     image: ghcr.io/nomadicco0-star/diaspora-concierge-backend:1.0.2
     restart: unless-stopped
     stop_grace_period: 1m
-    user: "1000:1000"
+    # Runs as root: Docker creates the bind-mount directories below as root:root on first mount,
+    # and the app creates working subdirectories inside them at runtime (the Hypercore proof-log
+    # and chat stores, the OCR temp dir). Running rootless there means EACCES on the first write.
+    # The container is isolated; this matches how the other apps on this Umbrel run.
+    user: "0:0"
     # migrate deploy is idempotent and re-run on every start; if Postgres isn't ready
     # yet the container exits non-zero and the restart policy brings it straight back,
     # so no explicit depends_on ordering is needed (and none can deadlock).
@@ -73,7 +77,7 @@ services:
     # file-level copy of the live data directory were ever torn.
     image: postgres:16-alpine
     restart: unless-stopped
-    user: "1000:1000"
+    user: "0:0"
     environment:
       PGPASSWORD: ${APP_SEED}
     volumes:

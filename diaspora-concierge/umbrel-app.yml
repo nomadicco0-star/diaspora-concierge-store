@@ -4,7 +4,7 @@ name: Diaspora Concierge
 tagline: Orchestration backend + admin panel for the Diaspora Concierge apps
 icon: https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
 category: Finance
-version: "1.0.3"
+version: "1.0.4"
 port: 4000
 description: >-
   The self-hosted backend for the Diaspora Concierge client and runner apps:
@@ -32,10 +32,11 @@ support: https://github.com/nomadicco0-star/diaspora-concierge-app/issues
 gallery:
   - https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
 releaseNotes: >-
-  1.0.3 — fixes a startup crash from a missing writable temp directory. The image is now far
-  smaller (the on-device AI model runtimes are optional and left out), so it installs on much
-  less disk. Admin bootstraps automatically; all data under the app data directory so Umbrel's
-  own Backups cover it. Public internet access via the separate Cloudflare Tunnel app.
+  1.0.4 — fixes task creation hanging (the tamper-evident proof-log storage directory was not
+  writable by the container). The image is small (the on-device AI model runtimes are optional
+  and left out), the admin account bootstraps automatically, and all data lives under the app
+  data directory so Umbrel's own Backups cover it. Public internet access is via the separate
+  Cloudflare Tunnel app.
 dependencies: []
 path: "/admin"
 defaultUsername: "admin@diasporaconcierge.app"
