@@ -1,0 +1,40 @@
+manifestVersion: 1
+id: diaspora-concierge
+name: Diaspora Concierge
+tagline: Orchestration backend + admin panel for the Diaspora Concierge apps
+icon: https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
+category: Finance
+version: "1.0.0"
+port: 4000
+description: >-
+  The self-hosted backend for the Diaspora Concierge client and runner apps:
+  task orchestration, escrow state, the platform-commission ledger, KYC review,
+  the tamper-evident proof log, AI receipt/translation checks, and the admin
+  panel.
+
+
+  Runs alongside BTCPay Server on the same Umbrel — the backend reaches BTCPay
+  over the local network, so BTCPay itself never needs to be exposed publicly.
+  A bundled Cloudflare Tunnel gives the backend a stable HTTPS address for the
+  mobile apps and for PayPal / Paynow payment webhooks, with no port-forwarding
+  and without revealing your home IP.
+
+
+  After installing: open the app's data folder, edit backend.env with your
+  Cloudflare Tunnel token and any payment-provider credentials, then restart the
+  app. See docs/DEPLOY_UMBREL.md in the source repo for the full walkthrough.
+developer: nomadicco0-star
+website: https://github.com/nomadicco0-star/diaspora-concierge-app
+submitter: nomadicco0-star
+submission: https://github.com/nomadicco0-star/diaspora-concierge-app
+repo: https://github.com/nomadicco0-star/diaspora-concierge-app
+support: https://github.com/nomadicco0-star/diaspora-concierge-app/issues
+gallery:
+  - https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
+releaseNotes: >-
+  First release. Backend + bundled Postgres + Cloudflare Tunnel, all durable
+  state under the app data directory so Umbrel's own Backups cover it.
+dependencies: []
+path: "/admin"
+defaultUsername: ""
+defaultPassword: ""

@@ -1,0 +1,102 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: diaspora-concierge_backend_1
+      APP_PORT: 4000
+      # The backend enforces its own JWT auth, and PayPal / Paynow webhooks plus the
+      # mobile apps cannot pass Umbrel's auth wall — so the proxy must not add one.
+      PROXY_AUTH_ADD: "false"
+
+  backend:
+    image: ghcr.io/nomadicco0-star/diaspora-concierge-backend:1.0.0
+    restart: unless-stopped
+    stop_grace_period: 1m
+    user: "1000:1000"
+    # migrate deploy is idempotent and re-run on every start; if Postgres isn't ready
+    # yet the container exits non-zero and the restart policy brings it straight back,
+    # so no explicit depends_on ordering is needed (and none can deadlock).
+    environment:
+      NODE_ENV: production
+      PORT: "4000"
+      DATABASE_URL: "postgresql://diaspora:${APP_SEED}@diaspora-concierge_postgres_1:5432/diaspora_concierge"
+      # Umbrel derives APP_SEED deterministically per app — a long hex string, stable
+      # across restarts and reinstalls, never in source control.
+      JWT_SECRET: ${APP_SEED}
+    env_file:
+      # Ships with the app (safe empty defaults) and is copied to the app data dir on
+      # install; edit it there for the Cloudflare token and payment-provider secrets.
+      - ${APP_DATA_DIR}/backend.env
+    volumes:
+      - ${APP_DATA_DIR}/uploads:/app/uploads
+      - ${APP_DATA_DIR}/uploads-kyc:/app/uploads-kyc
+      - ${APP_DATA_DIR}/hypercore-storage:/app/hypercore-storage
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:4000/health/ready', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    stop_grace_period: 1m
+    environment:
+      POSTGRES_USER: diaspora
+      POSTGRES_PASSWORD: ${APP_SEED}
+      POSTGRES_DB: diaspora_concierge
+      # Page-level checksums so silent disk corruption is detected on read rather than
+      # served as good data — worth the tiny overhead for financial records.
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    volumes:
+      - ${APP_DATA_DIR}/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U diaspora -d diaspora_concierge"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  db-backup:
+    # Belt-and-braces on top of Umbrel's own system Backups (which already sweep this whole app
+    # data directory): a daily pg_dump in Postgres's native custom format, 14 kept, written under
+    # the app data dir so Umbrel Backups pick them up too. A dump restores cleanly even if a
+    # file-level copy of the live data directory were ever torn.
+    image: postgres:16-alpine
+    restart: unless-stopped
+    user: "1000:1000"
+    environment:
+      PGPASSWORD: ${APP_SEED}
+    volumes:
+      - ${APP_DATA_DIR}/backups:/backups
+    entrypoint:
+      - sh
+      - -c
+      - |
+        echo "db-backup: daily pg_dump to /backups, keeping 14"
+        while true; do
+          ts=$$(date +%Y%m%d_%H%M%S)
+          if pg_dump -h diaspora-concierge_postgres_1 -U diaspora -d diaspora_concierge -Fc -f "/backups/db_$$ts.dump"; then
+            echo "db-backup: wrote db_$$ts.dump"
+            ls -1t /backups/db_*.dump 2>/dev/null | tail -n +15 | xargs -r rm --
+          else
+            echo "db-backup: pg_dump FAILED at $$ts"
+          fi
+          sleep 86400
+        done
+
+  cloudflared:
+    image: cloudflare/cloudflared:2026.9.0
+    restart: unless-stopped
+    # If the token isn't set yet, idle instead of crash-looping — the rest of the app
+    # (including the admin panel over your LAN) still works. Cloudflare Tunnel itself
+    # is disruption-tolerant: it holds four outbound connections to Cloudflare's edge,
+    # reconnects on its own after an internet drop or a home-IP change, and needs no
+    # port-forwarding.
+    command:
+      - sh
+      - -c
+      - 'if [ -z "$$TUNNEL_TOKEN" ]; then echo "TUNNEL_TOKEN not set - edit backend.env in this app''s data folder and restart the app"; exec sleep infinity; fi; exec cloudflared tunnel --no-autoupdate --loglevel info run'
+    env_file:
+      - ${APP_DATA_DIR}/backend.env
