@@ -10,7 +10,7 @@ services:
       PROXY_AUTH_ADD: "false"
 
   backend:
-    image: ghcr.io/nomadicco0-star/diaspora-concierge-backend:1.1.0
+    image: ghcr.io/nomadicco0-star/diaspora-concierge-backend:1.1.1
     restart: unless-stopped
     stop_grace_period: 1m
     # Runs as root: Docker creates the bind-mount directories below as root:root on first mount,
