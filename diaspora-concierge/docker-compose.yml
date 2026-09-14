@@ -33,6 +33,17 @@ services:
       # (deterministicPassword). Change it afterwards from the admin panel.
       ADMIN_EMAIL: admin@diasporaconcierge.app
       ADMIN_BOOTSTRAP_PASSWORD: ${APP_PASSWORD}
+      # Set here rather than left to backend.env: BTCPay Server is a separate Umbrel community
+      # app, on a different Docker network, so the internal hostname docs originally suggested
+      # (http://btcpay-server_web_1) doesn't resolve — confirmed via a live "fetch failed" from
+      # this container. The host's own LAN IP + BTCPay's exposed port does resolve (the same
+      # pattern BTCPay's own webhook already uses in the reverse direction, to reach this
+      # backend). Kept out of backend.env specifically because that file needs the Files app's
+      # editor to change, which has proven unreliably automatable — this value isn't a secret,
+      # so there's no reason it has to live in the user-editable file at all. Docker Compose's
+      # `environment:` always wins over `env_file:` for the same key, so this takes effect
+      # regardless of what backend.env still has on this line.
+      BTCPAY_URL: http://192.168.1.40:3003
     env_file:
       # Ships with the app (all blank) and is copied to the app data dir on install. Only needed
       # to connect payment providers — the app runs and the admin panel works on your LAN without
