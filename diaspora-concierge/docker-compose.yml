@@ -33,17 +33,27 @@ services:
       # (deterministicPassword). Change it afterwards from the admin panel.
       ADMIN_EMAIL: admin@diasporaconcierge.app
       ADMIN_BOOTSTRAP_PASSWORD: ${APP_PASSWORD}
-      # Set here rather than left to backend.env: BTCPay Server is a separate Umbrel community
-      # app, on a different Docker network, so the internal hostname docs originally suggested
-      # (http://btcpay-server_web_1) doesn't resolve — confirmed via a live "fetch failed" from
-      # this container. The host's own LAN IP + BTCPay's exposed port does resolve (the same
-      # pattern BTCPay's own webhook already uses in the reverse direction, to reach this
-      # backend). Kept out of backend.env specifically because that file needs the Files app's
-      # editor to change, which has proven unreliably automatable — this value isn't a secret,
-      # so there's no reason it has to live in the user-editable file at all. Docker Compose's
+      # Set here rather than left to backend.env: this value isn't a secret, and the Umbrel
+      # Files app's editor has proven unreliably automatable to drive via browser automation —
+      # no reason a non-secret has to live in the user-editable file at all. Docker Compose's
       # `environment:` always wins over `env_file:` for the same key, so this takes effect
       # regardless of what backend.env still has on this line.
-      BTCPAY_URL: http://192.168.1.40:3003
+      #
+      # Two live-tested attempts before this one both failed: the bare container name
+      # (http://btcpay-server_web_1 — a different community app's own compose project, on its
+      # own default Docker network by default, doesn't resolve: "fetch failed") and the host's
+      # LAN IP (http://192.168.1.40:3003 — confirmed via the container's own error: "connect
+      # ENETUNREACH 192.168.1.40:3003", a routing failure — an app container has no route to
+      # the LAN by default, only to the internet via NAT and to its own compose project's other
+      # containers). Umbrel's own app_proxy demonstrably *does* resolve `btcpay-server_web_1`
+      # (see BTCPay's own docker-compose.yml: its app_proxy is configured with exactly that
+      # APP_HOST) — the `networks:` block below joins this service to the same shared network
+      # Umbrel's app_proxy/tunnel containers use, on the theory that's what makes cross-app
+      # container-name resolution work, rather than every app container getting it by default.
+      BTCPAY_URL: http://btcpay-server_web_1:3003
+    networks:
+      - default
+      - umbrel_main_network
     env_file:
       # Ships with the app (all blank) and is copied to the app data dir on install. Only needed
       # to connect payment providers — the app runs and the admin panel works on your LAN without
@@ -108,3 +118,12 @@ services:
           fi
           sleep 86400
         done
+
+networks:
+  # Umbrel's own shared network, joined explicitly so the backend can resolve other community
+  # apps' containers by name (see the BTCPAY_URL comment above) — `default` (this project's own
+  # auto-created network) is kept too, since postgres/db-backup are only reachable there.
+  # `external: true` because Umbrel creates this network itself; a plain declaration here
+  # would try to create a second network with the same name and fail.
+  umbrel_main_network:
+    external: true

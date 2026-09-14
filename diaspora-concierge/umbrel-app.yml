@@ -4,7 +4,7 @@ name: Diaspora Concierge
 tagline: Orchestration backend + admin panel for the Diaspora Concierge apps
 icon: https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
 category: Finance
-version: "1.1.2"
+version: "1.1.3"
 port: 4000
 description: >-
   The self-hosted backend for the Diaspora Concierge client and runner apps:
@@ -32,6 +32,13 @@ support: https://github.com/nomadicco0-star/diaspora-concierge-app/issues
 gallery:
   - https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
 releaseNotes: >-
+  1.1.3 — second attempt at the BTCPay connectivity fix: 1.1.2's LAN-IP address turned out
+  unreachable too (containers have no route to the LAN by default, confirmed via "connect
+  ENETUNREACH"). This version instead joins the backend to Umbrel's own shared Docker network
+  and reverts BTCPAY_URL to the internal container name, matching how Umbrel's own app_proxy
+  reaches BTCPay. Still no image rebuild — same 1.1.1 image, config-only change.
+
+
   1.1.2 — fixes BTCPay invoice creation ("fetch failed"): BTCPAY_URL now points at the host's LAN
   address instead of an internal Docker hostname that doesn't resolve across separate Umbrel
   apps' networks. No image rebuild — same 1.1.1 image, just a corrected compose config, which
