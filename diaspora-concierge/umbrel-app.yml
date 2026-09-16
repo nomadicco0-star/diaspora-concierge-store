@@ -4,7 +4,7 @@ name: Diaspora Concierge
 tagline: Orchestration backend + admin panel for the Diaspora Concierge apps
 icon: https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
 category: Finance
-version: "1.1.5"
+version: "1.1.6"
 port: 4000
 description: >-
   The self-hosted backend for the Diaspora Concierge client and runner apps:
@@ -32,6 +32,13 @@ support: https://github.com/nomadicco0-star/diaspora-concierge-app/issues
 gallery:
   - https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
 releaseNotes: >-
+  1.1.6 — security hardening: rate limits added on payment webhooks, admin routes, and KYC
+  submission (previously uncapped). JWTs now have real server-side revocation — a password or
+  recovery-code reset invalidates every token issued before it, immediately, instead of waiting
+  out the 7-day expiry. New tokenVersion column on user/runner/admin accounts (applied
+  automatically on startup, no manual DB step needed). Real image rebuild.
+
+
   1.1.5 — security fix: multer (file uploads — KYC docs, proof photos, receipts all go through
   it) had an unauthenticated remote DoS, patchable by anyone with a single crafted upload request
   (CVE-2026-77078, high severity, fixed upstream in 2.3.0). Bumped to 2.4.0. Also forces qs (a
