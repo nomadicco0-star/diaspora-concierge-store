@@ -4,7 +4,7 @@ name: Diaspora Concierge
 tagline: Orchestration backend + admin panel for the Diaspora Concierge apps
 icon: https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
 category: Finance
-version: "1.2.0"
+version: "1.2.1"
 port: 4000
 description: >-
   The self-hosted backend for the Diaspora Concierge client and runner apps:
@@ -32,6 +32,13 @@ support: https://github.com/nomadicco0-star/diaspora-concierge-app/issues
 gallery:
   - https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
 releaseNotes: >-
+  1.2.1 — new: BTCPay version-drift monitoring. The live BTCPay instance's version is now checked
+  daily (and on demand from the admin panel's new "BTCPay Server version" section) against
+  BTCPay's own latest GitHub release, so a future critical patch doesn't rely on someone noticing
+  by hand — the same way the 2.4.1 Lightning vulnerability was originally caught. Reports
+  "unknown," never a false "outdated," if GitHub can't be reached.
+
+
   1.2.0 — new: a barter system. Clients and runners can post a direct goods/services exchange
   (no money changes hands) for a flat 25-cent posting fee, BTC only — a small anti-spam gate, not
   a revenue push. Browse listings, message an interested party privately, and mark a listing
