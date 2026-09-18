@@ -4,7 +4,7 @@ name: Diaspora Concierge
 tagline: Orchestration backend + admin panel for the Diaspora Concierge apps
 icon: https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
 category: Finance
-version: "1.2.2"
+version: "1.2.3"
 port: 4000
 description: >-
   The self-hosted backend for the Diaspora Concierge client and runner apps:
@@ -32,6 +32,15 @@ support: https://github.com/nomadicco0-star/diaspora-concierge-app/issues
 gallery:
   - https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
 releaseNotes: >-
+  1.2.3 — automated disk-usage monitoring (checked every 6 hours and on demand from the admin
+  panel), closing the gap that let the 18 Sept disk-full incident go unnoticed for weeks. Paynow
+  webhook payments now cross-check the amount actually paid against the task's real charge,
+  matching the same protection PayPal already had. Admin two-factor login gets two more real
+  protections: a per-account lockout after 5 wrong codes (independent of the generic per-IP rate
+  limit), and anti-replay so a captured code can't be reused even within its normal validity
+  window. No user-facing behavior changes for normal use.
+
+
   1.2.2 — security & reliability: rate limiting closed on every remaining unbounded route
   (payment funding, task accept/approve/cancel, delivery quotes, and the profile/payout-address
   routes, including a runner's BTC/ETH/PayPal/Paynow payout destination). Fixed a login/recovery
