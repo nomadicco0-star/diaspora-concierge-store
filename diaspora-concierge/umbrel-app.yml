@@ -4,7 +4,7 @@ name: Diaspora Concierge
 tagline: Orchestration backend + admin panel for the Diaspora Concierge apps
 icon: https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
 category: Finance
-version: "1.2.1"
+version: "1.2.2"
 port: 4000
 description: >-
   The self-hosted backend for the Diaspora Concierge client and runner apps:
@@ -32,6 +32,15 @@ support: https://github.com/nomadicco0-star/diaspora-concierge-app/issues
 gallery:
   - https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
 releaseNotes: >-
+  1.2.2 — security & reliability: rate limiting closed on every remaining unbounded route
+  (payment funding, task accept/approve/cancel, delivery quotes, and the profile/payout-address
+  routes, including a runner's BTC/ETH/PayPal/Paynow payout destination). Fixed a login/recovery
+  timing bug that could let account emails be enumerated, a runner being able to read a
+  cross-border task's full details it should never see, and a non-constant-time delivery-code
+  comparison. Dependency audit triaged item-by-item (one real finding fixed, the rest confirmed
+  build-tooling-only). No user-facing behavior changes.
+
+
   1.2.1 — new: BTCPay version-drift monitoring. The live BTCPay instance's version is now checked
   daily (and on demand from the admin panel's new "BTCPay Server version" section) against
   BTCPay's own latest GitHub release, so a future critical patch doesn't rely on someone noticing
