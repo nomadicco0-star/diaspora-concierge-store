@@ -4,7 +4,7 @@ name: Diaspora Concierge
 tagline: Orchestration backend + admin panel for the Diaspora Concierge apps
 icon: https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
 category: Finance
-version: "1.2.5"
+version: "1.2.6"
 port: 4000
 description: >-
   The self-hosted backend for the Diaspora Concierge client and runner apps:
@@ -32,6 +32,16 @@ support: https://github.com/nomadicco0-star/diaspora-concierge-app/issues
 gallery:
   - https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
 releaseNotes: >-
+  1.2.6 — new: early-warning alert emails. Disk usage, BTCPay reachability/version, QVAC drift,
+  and (new) direct database reachability now email whoever ALERT_EMAIL_TO is set to when they go
+  from healthy to bad, and again when they recover — previously these only ever logged, so nothing
+  reached anyone unless they happened to be looking at the admin panel. Fully optional: set
+  SMTP_HOST/PORT/USER/PASS/FROM and ALERT_EMAIL_TO in backend.env to enable it (any SMTP provider
+  works, e.g. a Gmail App Password); leave it blank and every check still runs and still shows in
+  the admin panel, it just can't also email. A "Send test email" button in the admin panel's new
+  "Alert emails" section confirms your SMTP settings without waiting for a real check to fail.
+
+
   1.2.5 — new: QVAC version-drift monitoring (admin panel, checked daily and on demand). Covers
   the @qvac/sdk npm package and the two Hugging Face model files pinned directly in code for
   translation and the insights report — three independent places QVAC can go stale that nothing
