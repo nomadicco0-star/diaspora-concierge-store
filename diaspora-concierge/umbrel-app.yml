@@ -4,7 +4,7 @@ name: Diaspora Concierge
 tagline: Orchestration backend + admin panel for the Diaspora Concierge apps
 icon: https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
 category: Finance
-version: "1.2.4"
+version: "1.2.5"
 port: 4000
 description: >-
   The self-hosted backend for the Diaspora Concierge client and runner apps:
@@ -32,6 +32,14 @@ support: https://github.com/nomadicco0-star/diaspora-concierge-app/issues
 gallery:
   - https://raw.githubusercontent.com/nomadicco0-star/diaspora-concierge-app/main/apps/client/assets/icon.png
 releaseNotes: >-
+  1.2.5 — new: QVAC version-drift monitoring (admin panel, checked daily and on demand). Covers
+  the @qvac/sdk npm package and the two Hugging Face model files pinned directly in code for
+  translation and the insights report — three independent places QVAC can go stale that nothing
+  was watching before. Notification-only: it flags when something's behind, it never auto-upgrades
+  (recent QVAC releases have shipped real breaking changes, so any update needs a reviewed
+  migration). No change to how AI features behave in this deployment.
+
+
   1.2.4 — includes the automated disk-usage monitoring that should have shipped in 1.2.3 (the
   merge step was missed that time; caught and fixed the same day by checking that the new admin
   route actually responded on the live instance, not just that CI was green). No other changes.
